@@ -1,7 +1,8 @@
 import React, {Component} from "react";
-import {View, Text} from "react-native";
 import {connect} from "react-redux";
+import {View, Text} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+
 // Styles
 import {Colors} from '../Themes'
 import styles from './Styles/SplashScreenStyle'
@@ -29,9 +30,8 @@ class SplashScreen extends Component {
 
     render() {
         return (
-            <View style={styles.screen}>
-                <LinearGradient colors={[Colors.gradient1, Colors.gradient2]} style={styles.backggitroundImage}>
-                    <Text>hello</Text>
+            <View style={styles.mainContainer}>
+                <LinearGradient colors={[Colors.gradient1, Colors.gradient2]} style={styles.backgroundImage}>
                 </LinearGradient>
             </View>
         )

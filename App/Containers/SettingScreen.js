@@ -1,8 +1,9 @@
 import React, {Component} from "react";
-import {View} from "react-native";
+import {View, Text} from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux";
-
 // Styles
+import {Colors} from '../Themes'
 
 class SettingScreen extends Component {
 
@@ -14,7 +15,9 @@ class SettingScreen extends Component {
 
     render() {
         return (
-            <View style={{flex: 1}}>
+            <View style={styles.mainContainer}>
+                <LinearGradient colors={[Colors.gradient1, Colors.gradient2]} style={styles.backgroundImage}>
+                </LinearGradient>
             </View>
         )
     }
