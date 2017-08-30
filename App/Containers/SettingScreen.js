@@ -9,6 +9,9 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 const Permissions = require('react-native-permissions')
 var PushNotification = require('react-native-push-notification')
 import Quotes from '../Constants/Quotes'
+import QuoteActions from '../Redux/QuoteRedux'
+
+
 // Styles
 import {Colors} from '../Themes'
 import styles from './Styles/SettingScreenStyle'
@@ -33,14 +36,15 @@ class SettingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            dailyNotification: false,
-            pushNotification: false,
+            dailyNotification: this.props.dailyNotification,
+            pushNotification: this.props.pushNotification,
             time: moment().format("h:mm A"),
-            actualTime: moment.utc(),
+            actualTime: Date.now(),
             isDateTimePickerVisible: false,
         }
         this._handleAppStateChange = this._handleAppStateChange.bind(this)
         this.checkNotificationPermissions = this.checkNotificationPermissions.bind(this)
+        this.scheduleLocalNotification = this.scheduleLocalNotification.bind(this)
     }
 
     componentDidMount() {
@@ -57,15 +61,25 @@ class SettingScreen extends Component {
         PushNotificationIOS.removeEventListener('localNotification', this.onNotification)
     }
 
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps)
+        this.setState({
+            dailyNotification: nextProps.dailyNotification,
+            pushNotification: nextProps.pushNotification,
+        })
+    }
+
     checkNotificationPermissions() {
         //response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
         Permissions.check('notification')
             .then(response => {
+                console.log(response)
                 if (response == 'undetermined') {
                     Permissions.request('notification')
                         .then(response => {
                             if (response == 'authorized') {
-                                this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications IOS
+                                // this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications IOS
+                                this.props.setNotificationState(true, true)
                             }
                         })
                 } else if (response == 'denied') {
@@ -90,7 +104,8 @@ class SettingScreen extends Component {
                         {cancelable: false}
                     )
                 } else if (response == 'authorized') {
-                    this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS, Schedule notifications IOS
+                    // this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS, Schedule notifications IOS
+                    this.props.setNotificationState(true, true)
                 }
             })
     }
@@ -100,11 +115,14 @@ class SettingScreen extends Component {
             Permissions.check('notification')
                 .then(response => {
                     if (response == 'undetermined') {
-                        this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                        // this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                        this.props.setNotificationState(false, false)
                     } else if (response == 'denied') {
-                        this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                        // this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                        this.props.setNotificationState(false, false)
                     } else if (response == 'authorized') {
-                        this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS
+                        // this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS
+                        this.props.setNotificationState(true, true)
                     }
                 })
         }
@@ -119,31 +137,23 @@ class SettingScreen extends Component {
             if (Platform.OS === 'ios') {
                 this.checkNotificationPermissions()
             } else {
-                this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications ANDROID
+                // this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications ANDROID
+                this.props.setNotificationState(true, true)
             }
+            this.scheduleLocalNotification(this.state.actualTime)
         } else {
+            console.log(value)
+            this.props.setNotificationState(false, false)
             if (Platform.OS === 'ios') {
                 PushNotificationIOS.cancelLocalNotifications()
             } else {
                 PushNotification.cancelAllLocalNotifications()
             }
-            this.setState({dailyNotification: false, pushNotification: false})  //TODO : Test IN SAGAS, Cancel all notifications IOS and ANDROID
+            // this.setState({dailyNotification: false, pushNotification: false})  //TODO : Test IN SAGAS, Cancel all notifications IOS and ANDROID
         }
     }
 
-    handlePressTime() {
-        this.setState({isDateTimePickerVisible: true})
-    }
-
-    _handleTimePicked = (time) => {
-        this.setState({
-            isDateTimePickerVisible: false,
-            time: moment(time).format("h:mm A"),
-            actualTime: moment(time).utc()
-        })
-
-        //TODO : Test Schedule notifications ANDROID and IOS
-
+    scheduleLocalNotification(time) {
         if (Platform.OS === 'ios') {
             PushNotificationIOS.scheduleLocalNotification({
                 firedate: time,
@@ -159,6 +169,22 @@ class SettingScreen extends Component {
                 // repeatTime: (60 * 1000),
             })
         }
+    }
+
+    handlePressTime() {
+        this.setState({isDateTimePickerVisible: true})
+    }
+
+    _handleTimePicked = (time) => {
+        this.setState({
+            isDateTimePickerVisible: false,
+            time: moment(time).format("h:mm A"),
+            actualTime: time
+        })
+
+        //TODO : Test Schedule notifications ANDROID and IOS
+        this.scheduleLocalNotification(time)
+
     }
 
     render() {
@@ -219,9 +245,14 @@ class SettingScreen extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {}
+    return {
+        pushNotification: state.quote.pushNotification,
+        dailyNotification: state.quote.dailyNotification,
+    }
 }
 
-const mapDispatchToProps = (dispatch) => ({})
+const mapDispatchToProps = (dispatch) => ({
+    setNotificationState: (pushNotification, dailyNotification) => dispatch(QuoteActions.notificationState(pushNotification, dailyNotification))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(SettingScreen)

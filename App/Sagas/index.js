@@ -14,6 +14,6 @@ export default function* root() {
     yield [
         // some sagas only receive an action
         takeLatest(StartupTypes.STARTUP, startup),
-        takeLatest(QuoteTypes.GET_QUOTE_LIST, getQuoteList()),
+        // takeLatest(QuoteTypes.GET_QUOTE_LIST, getQuoteList()),
     ]
 }
