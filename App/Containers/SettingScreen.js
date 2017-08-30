@@ -150,6 +150,8 @@ class SettingScreen extends Component {
             time: moment(time).format("h:mm A"),
             actualTime: moment(time).utc()
         })
+
+        //TODO : Schedule notifications ANDROID and IOS
     }
 
     render() {
