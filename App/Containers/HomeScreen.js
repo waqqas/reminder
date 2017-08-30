@@ -1,10 +1,10 @@
 import React, {Component} from "react";
-import {Button, Icon} from 'react-native-elements';
+import {Button, Icon} from 'react-native-elements'
 import moment from 'moment'
 import {connect} from "react-redux";
 import {View, Text} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
-import {responsiveWidth} from 'react-native-responsive-dimensions'
+import {responsiveWidth, responsiveHeight} from 'react-native-responsive-dimensions'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 
 // Styles
@@ -81,7 +81,9 @@ class HomeScreen extends Component {
                         alignSelf: 'center',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        width: responsiveWidth(70)
+                        width: responsiveWidth(70),
+                        position: 'absolute',
+                        top: responsiveHeight(25),
                     }}>
                         <Icon
                             size={45}
@@ -105,9 +107,9 @@ class HomeScreen extends Component {
                         <Text style={{color: Colors.snow, fontSize: 18}}>{Quotes[this.state.dayOfYear]}</Text>
                     </View>
 
-                    <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: 0}}>
                         <Icon
-                            size={45}
+                            size={30}
                             name='heart'
                             type='font-awesome'
                             color={Colors.transparentGrey}

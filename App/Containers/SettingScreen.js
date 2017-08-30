@@ -4,10 +4,10 @@ import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux"
 import {Button, Icon} from 'react-native-elements'
 import moment from 'moment'
-import {responsiveWidth} from 'react-native-responsive-dimensions'
+import {responsiveWidth, responsiveHeight} from 'react-native-responsive-dimensions'
 import DateTimePicker from 'react-native-modal-datetime-picker'
 const Permissions = require('react-native-permissions')
-// var PushNotification = require('react-native-push-notification')
+var PushNotification = require('react-native-push-notification')
 
 // Styles
 import {Colors} from '../Themes'
@@ -45,14 +45,16 @@ class SettingScreen extends Component {
 
     componentDidMount() {
         AppState.addEventListener('change', this._handleAppStateChange)
+        PushNotificationIOS.addEventListener('notification', this.onNotification)
+        PushNotification.localNotification({
+            // title: "My Notification Title",
+            message: "My Notification Message",
+        })
     }
 
     componentWillUnmount() {
         AppState.removeEventListener('change', this._handleAppStateChange)
-        // PushNotification.localNotification({
-        //     title: "My Notification Title",
-        //     message: "My Notification Message",
-        // })
+        PushNotificationIOS.removeEventListener('notification', this.onNotification)
     }
 
     checkNotificationPermissions() {
@@ -95,7 +97,16 @@ class SettingScreen extends Component {
 
     _handleAppStateChange(appState) {
         if (appState == 'active') {
-            this.checkNotificationPermissions()
+            Permissions.check('notification')
+                .then(response => {
+                    if (response == 'undetermined') {
+                        this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                    } else if (response == 'denied') {
+                        this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
+                    } else if (response == 'authorized') {
+                        this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS
+                    }
+                })
         }
     }
 
@@ -139,9 +150,11 @@ class SettingScreen extends Component {
                         alignSelf: 'center',
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        width: responsiveWidth(70)
+                        width: responsiveWidth(70),
+                        position: 'absolute',
+                        top: responsiveHeight(20),
                     }}>
-                        <Text style={{color: Colors.transparentGrey, fontSize: 25}}>Daily Notifications</Text>
+                        <Text style={{color: Colors.snow, fontSize: 18}}>Daily Notifications</Text>
                         <Switch
                             style={{}}
                             onValueChange={this.handleSwitch.bind(this)}
@@ -154,9 +167,9 @@ class SettingScreen extends Component {
                               onPress={this.handlePressTime.bind(this)}>{this.state.time}</Text>
                     </View>
 
-                    <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: 0}}>
                         <Icon
-                            size={45}
+                            size={30}
                             name='heart'
                             type='font-awesome'
                             color={Colors.transparentGrey}

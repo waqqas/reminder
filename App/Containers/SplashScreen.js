@@ -1,8 +1,9 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {View, Text} from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
 import {NavigationActions} from "react-navigation"
+import {Icon} from 'react-native-elements';
+
 // Styles
 import {Colors} from '../Themes'
 import styles from './Styles/SplashScreenStyle'
@@ -30,10 +31,16 @@ class SplashScreen extends Component {
 
     render() {
         return (
-            <View style={styles.mainContainer}>
-                <LinearGradient colors={[Colors.gradient1, Colors.gradient2]} style={styles.backgroundImage}>
-
-                </LinearGradient>
+            <View style={{backgroundColor: 'black', flex: 1, justifyContent: 'center'}}>
+                <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'center'}}>
+                    <Icon
+                        size={30}
+                        name='heart'
+                        type='font-awesome'
+                        color={Colors.transparentGrey}
+                        underlayColor={Colors.transparent}/>
+                    <Text style={{color: Colors.transparentGrey, fontSize: 35}}>LOGO IMAGE</Text>
+                </View>
             </View>
         )
     }
