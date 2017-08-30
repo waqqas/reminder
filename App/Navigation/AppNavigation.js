@@ -11,18 +11,9 @@ import SettingScreen from "../Containers/SettingScreen";
 const PrimaryNav = StackNavigator({
     SettingScreen: {
         screen: SettingScreen,
-        navigationOptions: ({navigation}) => ({
-            title: 'Settings',
-            // header: <Header/>,
-            // headerRight:
-        })},
+    },
     HomeScreen: {
         screen: HomeScreen,
-        // navigationOptions: ({navigation}) => ({
-        //     title: 'Settings',
-        //     // header: <Header/>,
-        //     headerRight: <Button title="Info" onPress= {() => {console.log('*******')} }/>
-        // })
     },
     SplashScreen: {screen: SplashScreen},
 }, {

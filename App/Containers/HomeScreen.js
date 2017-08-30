@@ -19,7 +19,7 @@ class HomeScreen extends Component {
                 icon={{name: 'settings', size: 28, color: Colors.transparentGrey}}
                 buttonStyle={{backgroundColor: Colors.transparent}}
                 onPress={() => {navigation.navigate( 'SettingScreen')}}/>,
-            headerStyle: {position: 'absolute', backgroundColor: 'transparent', zIndex: 100, top: 0, left: 0, right: 0}
+            headerStyle: {position: 'absolute', backgroundColor: 'transparent', zIndex: 100, top: 0, left: 0, right: 0},
 
         })
     }
