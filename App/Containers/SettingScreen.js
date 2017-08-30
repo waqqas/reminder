@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {View, Text, Switch, PushNotificationIOS, AppState, Alert, Linking} from 'react-native'
+import {View, Text, Switch, PushNotificationIOS, AppState, Alert, Linking, Platform} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux"
 import {Button, Icon} from 'react-native-elements'
@@ -65,7 +65,7 @@ class SettingScreen extends Component {
                     Permissions.request('notification')
                         .then(response => {
                             if (response == 'authorized') {
-                                this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS
+                                this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications IOS
                             }
                         })
                 } else if (response == 'denied') {
@@ -90,13 +90,13 @@ class SettingScreen extends Component {
                         {cancelable: false}
                     )
                 } else if (response == 'authorized') {
-                    this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS
+                    this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS, Schedule notifications IOS
                 }
             })
     }
 
     _handleAppStateChange(appState) {
-        if (appState == 'active') {
+        if (appState == 'active' && Platform.OS === 'ios') {
             Permissions.check('notification')
                 .then(response => {
                     if (response == 'undetermined') {
@@ -108,6 +108,13 @@ class SettingScreen extends Component {
                     }
                 })
         }
+    }
+
+    scheduleLocalNotification () {
+        PushNotification.localNotificationSchedule({
+            message: "My Notification Message", // (required)
+            date: new Date(Date.now() + (60 * 1000)) // in 60 secs
+        })
     }
 
     _onRegistered(deviceToken) {
@@ -123,9 +130,13 @@ class SettingScreen extends Component {
 
     handleSwitch(value) {
         if (value) {
-            this.checkNotificationPermissions()
+            if(Platform.OS === 'ios') {
+                this.checkNotificationPermissions()
+            }else {
+                this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications ANDROID
+            }
         }else {
-            this.setState({dailyNotification: false, pushNotification: false})  //TODO : IN SAGAS
+            this.setState({dailyNotification: false, pushNotification: false})  //TODO : IN SAGAS, Cancel all notifications IOS and ANDROID
         }
     }
 
