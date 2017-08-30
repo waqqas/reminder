@@ -3,6 +3,7 @@ const colors = {
     clear: 'rgba(0,0,0,0)',
     facebook: '#3b5998',
     transparent: 'rgba(0,0,0,0)',
+    transparentGrey: 'rgba(255,255,255,0.2)',
     silver: '#F7F7F7',
     steel: '#CCCCCC',
     error: 'rgba(200, 0, 0, 0.8)',

@@ -7,7 +7,6 @@ const {Types, Creators} = createActions({
     startup: null,
     startupSuccess: null,
     startupFailure: null,
-    sendFeedback: ['data']
 })
 
 export const StartupTypes = Types

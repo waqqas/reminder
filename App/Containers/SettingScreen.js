@@ -4,14 +4,15 @@ import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux";
 // Styles
 import {Colors} from '../Themes'
+import styles from './Styles/SettingScreenStyle'
 
 class SettingScreen extends Component {
 
-    static navigationOptions = ({navigation}) => {
-        return ({
-            header: null
-        })
-    }
+    // static navigationOptions = ({navigation}) => {
+    //     return ({
+    //         header: null
+    //     })
+    // }
 
     render() {
         return (

@@ -1,4 +1,7 @@
 import React, {Component} from "react";
+// import {Button} from 'react-native'
+import {Button} from 'react-native-elements';
+
 import {connect} from "react-redux";
 import {View, Text} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
@@ -12,7 +15,12 @@ class HomeScreen extends Component {
 
     static navigationOptions = ({navigation}) => {
         return ({
-            header: null
+            headerRight: <Button
+                icon={{name: 'settings', size: 28, color: Colors.transparentGrey}}
+                buttonStyle={{backgroundColor: Colors.transparent}}
+                onPress={() => {navigation.navigate( 'SettingScreen')}}/>,
+            headerStyle: {position: 'absolute', backgroundColor: 'transparent', zIndex: 100, top: 0, left: 0, right: 0}
+
         })
     }
 
@@ -27,8 +35,7 @@ class HomeScreen extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-    }
+    return {}
 }
 
 const mapDispatchToProps = (dispatch) => ({})

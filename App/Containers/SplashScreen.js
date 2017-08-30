@@ -32,6 +32,7 @@ class SplashScreen extends Component {
         return (
             <View style={styles.mainContainer}>
                 <LinearGradient colors={[Colors.gradient1, Colors.gradient2]} style={styles.backgroundImage}>
+
                 </LinearGradient>
             </View>
         )
