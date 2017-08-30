@@ -8,7 +8,7 @@ import {responsiveWidth, responsiveHeight} from 'react-native-responsive-dimensi
 import DateTimePicker from 'react-native-modal-datetime-picker'
 const Permissions = require('react-native-permissions')
 var PushNotification = require('react-native-push-notification')
-
+import Quotes from '../Constants/Quotes'
 // Styles
 import {Colors} from '../Themes'
 import styles from './Styles/SettingScreenStyle'
@@ -26,7 +26,7 @@ class SettingScreen extends Component {
                     navigation.goBack()
                 }}/>,
             headerStyle: {position: 'absolute', backgroundColor: 'transparent', zIndex: 100, top: 0, left: 0, right: 0},
-            headerTitleStyle: {color: Colors.transparentGrey, fontSize: 25}
+            headerTitleStyle: {color: Colors.transparentGrey, fontSize: 25, alignSelf: 'center'}
         })
     }
 
@@ -45,16 +45,16 @@ class SettingScreen extends Component {
 
     componentDidMount() {
         AppState.addEventListener('change', this._handleAppStateChange)
-        PushNotificationIOS.addEventListener('notification', this.onNotification)
-        PushNotification.localNotification({
-            // title: "My Notification Title",
-            message: "My Notification Message",
-        })
+        PushNotificationIOS.addEventListener('localNotification', this.onNotification)
+        // PushNotification.localNotification({
+        //     title: "Today's reminder",
+        //     message: "You are awesome!",
+        // })
     }
 
     componentWillUnmount() {
         AppState.removeEventListener('change', this._handleAppStateChange)
-        PushNotificationIOS.removeEventListener('notification', this.onNotification)
+        PushNotificationIOS.removeEventListener('localNotification', this.onNotification)
     }
 
     checkNotificationPermissions() {
@@ -110,33 +110,24 @@ class SettingScreen extends Component {
         }
     }
 
-    scheduleLocalNotification () {
-        PushNotification.localNotificationSchedule({
-            message: "My Notification Message", // (required)
-            date: new Date(Date.now() + (60 * 1000)) // in 60 secs
-        })
-    }
-
-    _onRegistered(deviceToken) {
-        console.log('Device Token: ', deviceToken);
-        // Update device push token against current device
-        // const {dispatch} = this.props
-        // dispatch(Actions.updatePushToken(deviceToken))
-    }
-
     onNotification(notification) {
         console.log('OnNotify', notification)
     }
 
     handleSwitch(value) {
         if (value) {
-            if(Platform.OS === 'ios') {
+            if (Platform.OS === 'ios') {
                 this.checkNotificationPermissions()
-            }else {
+            } else {
                 this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications ANDROID
             }
-        }else {
-            this.setState({dailyNotification: false, pushNotification: false})  //TODO : IN SAGAS, Cancel all notifications IOS and ANDROID
+        } else {
+            if (Platform.OS === 'ios') {
+                PushNotificationIOS.cancelLocalNotifications()
+            } else {
+                PushNotification.cancelAllLocalNotifications()
+            }
+            this.setState({dailyNotification: false, pushNotification: false})  //TODO : Test IN SAGAS, Cancel all notifications IOS and ANDROID
         }
     }
 
@@ -151,7 +142,23 @@ class SettingScreen extends Component {
             actualTime: moment(time).utc()
         })
 
-        //TODO : Schedule notifications ANDROID and IOS
+        //TODO : Test Schedule notifications ANDROID and IOS
+
+        if (Platform.OS === 'ios') {
+            PushNotificationIOS.scheduleLocalNotification({
+                firedate: time,
+                repeatInterval: 'day',
+                alertBody: Quotes[moment(time).dayOfYear()]
+            })
+        } else {
+            PushNotification.localNotificationSchedule({
+                message: Quotes[moment(time).dayOfYear()],
+                date: time,
+                repeatType: 'day',
+                // repeatType: 'time',
+                // repeatTime: (60 * 1000),
+            })
+        }
     }
 
     render() {
@@ -180,7 +187,13 @@ class SettingScreen extends Component {
                               onPress={this.handlePressTime.bind(this)}>{this.state.time}</Text>
                     </View>
 
-                    <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: 0}}>
+                    <View style={{
+                        alignSelf: 'center',
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        position: 'absolute',
+                        bottom: 0
+                    }}>
                         <Icon
                             size={30}
                             name='heart'
