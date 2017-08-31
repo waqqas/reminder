@@ -38,7 +38,6 @@ class SettingScreen extends Component {
         this.state = {
             dailyNotification: this.props.dailyNotification,
             pushNotification: this.props.pushNotification,
-            time: moment().format("h:mm A"),
             actualTime: new Date(Date.now()),
             isDateTimePickerVisible: false,
         }
@@ -122,11 +121,11 @@ class SettingScreen extends Component {
             Permissions.check('notification')
                 .then(response => {
                     if (response == 'undetermined') {
-                        this.props.setNotificationState(false, this.state.dailyNotification)
+                        this.props.setNotificationState(false, false)
                     } else if (response == 'denied') {
-                        this.props.setNotificationState(false, this.state.dailyNotification)
+                        this.props.setNotificationState(false, false)
                     } else if (response == 'authorized') {
-                        this.props.setNotificationState(true, this.state.dailyNotification)
+                        this.props.setNotificationState(true, true)
                     }
                 })
         }
@@ -147,11 +146,11 @@ class SettingScreen extends Component {
             this.scheduleLocalNotification(this.state.actualTime)
         } else {
             this.props.setNotificationState(false, false)
-            if (Platform.OS === 'ios') {
-                PushNotificationIOS.cancelLocalNotifications()
-            } else {
-                PushNotification.cancelAllLocalNotifications()
-            }
+            // if (Platform.OS === 'ios') {
+            //     PushNotificationIOS.cancelLocalNotifications()
+            // } else {
+            //     PushNotification.cancelAllLocalNotifications()
+            // }
         }
     }
 
@@ -167,7 +166,7 @@ class SettingScreen extends Component {
             PushNotification.localNotificationSchedule({
                 message: Quotes[moment(time).dayOfYear()],
                 date: time,
-                repeatType: 'day',
+                repeatType: 'minute',
                 // repeatType: 'time',
                 // repeatTime: (60 * 1000),
             })
@@ -181,7 +180,6 @@ class SettingScreen extends Component {
     _handleTimePicked = (time) => {
         this.setState({
             isDateTimePickerVisible: false,
-            time: moment(time).format("h:mm A"),
             actualTime: time
         })
         console.log('Time picked', time)
@@ -213,7 +211,7 @@ class SettingScreen extends Component {
 
                     <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
                         <Text style={{color: Colors.snow, fontSize: 28}}
-                              onPress={this.handlePressTime.bind(this)}>{this.state.time}</Text>
+                              onPress={this.handlePressTime.bind(this)}>{moment(this.state.actualTime).format("h:mm A")}</Text>
                     </View>
 
                     <View style={{
