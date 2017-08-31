@@ -37,11 +37,10 @@ export function* toggleNotification() {
                 const dayOfYear = moment(fireDate).dayOfYear()
                 const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
 
-                PushNotification.cancelAllLocalNotifications()
+                // PushNotification.cancelAllLocalNotifications()
 
-                PushNotification.localNotificationSchedule({
-                    message: message,
-                    date: fireDate
+                PushNotification.localNotification({
+                    message: message
                 });
 
                 yield put(QuoteActions.toggleNotificationSuccess())
@@ -63,12 +62,11 @@ export function* setNotificationTime({fireDate}) {
         const dayOfYear = moment(fireDate).dayOfYear()
         const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
 
-        PushNotification.cancelAllLocalNotifications()
+        // PushNotification.cancelAllLocalNotifications()
 
 
-        PushNotification.localNotificationSchedule({
+        PushNotification.localNotification({
             message: message,
-            date: fireDate
         });
 
     }

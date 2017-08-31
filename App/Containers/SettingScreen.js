@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {AppState, Platform, PushNotificationIOS, Switch, Text, View} from 'react-native'
+import {PushNotificationIOS, Switch, Text, View} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux"
 import {Button, Icon} from 'react-native-elements'
@@ -10,9 +10,6 @@ import DateTimePicker from 'react-native-modal-datetime-picker'
 import {Colors} from '../Themes'
 import styles from './Styles/SettingScreenStyle'
 import QuoteActions from '../Redux/QuoteRedux'
-
-const Permissions = require('react-native-permissions')
-var PushNotification = require('react-native-push-notification')
 
 
 class SettingScreen extends Component {
@@ -35,30 +32,15 @@ class SettingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            // fireDate: new Date(Date.now()),
             isDateTimePickerVisible: false,
         }
-        // this._handleAppStateChange = this._handleAppStateChange.bind(this)
-        // this.checkNotificationPermissions = this.checkNotificationPermissions.bind(this)
-        // this.scheduleLocalNotification = this.scheduleLocalNotification.bind(this)
     }
 
     componentDidMount() {
-        // AppState.addEventListener('change', this._handleAppStateChange)
-        // PushNotificationIOS.addEventListener('localNotification', this.onNotification)
-        // PushNotification.localNotification({
-        //     title: "Today's reminder",
-        //     message: "You are awesome!",
-        // })
-        // PushNotification.localNotificationSchedule({
-        //     message: "My Notification Message", // (required)
-        //     title: "Today's reminder",
-        //     date: new Date(Date.now() + 1000) // in 60 secs
-        // });
+        PushNotificationIOS.addEventListener('localNotification', this.onNotification)
     }
 
     componentWillUnmount() {
-        // AppState.removeEventListener('change', this._handleAppStateChange)
         PushNotificationIOS.removeEventListener('localNotification', this.onNotification)
     }
 
@@ -69,25 +51,6 @@ class SettingScreen extends Component {
     handleSwitch() {
         this.props.toggleNotification()
     }
-
-    // scheduleLocalNotification(time) {
-    //     console.log('Schedule notification', time)
-    //     // if (Platform.OS === 'ios') {
-    //     //     PushNotificationIOS.scheduleLocalNotification({
-    //     //         firedate: time,
-    //     //         repeatInterval: 'day',
-    //     //         alertBody: Quotes[moment(time).dayOfYear()]
-    //     //     })
-    //     // } else {
-    //     PushNotification.localNotificationSchedule({
-    //         message: Quotes[moment(time).dayOfYear()],
-    //         date: time,
-    //         repeatType: 'day',
-    //         // repeatType: 'time',
-    //         // repeatTime: (60 * 1000),
-    //     })
-    //     // }
-    // }
 
     handlePressTime() {
         this.setState({isDateTimePickerVisible: true})
@@ -100,10 +63,6 @@ class SettingScreen extends Component {
         })
 
         this.props.setNotificationTime(fireDate)
-        // console.log('Time picked', time)
-        // if (this.state.dailyNotification) {
-        //     this.scheduleLocalNotification(time)
-        // }
     }
 
     render() {
