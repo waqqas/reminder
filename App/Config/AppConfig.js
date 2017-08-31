@@ -1,5 +1,5 @@
 export default {
     splashDelay: 1000,
-    repeatIntervalUnit: 'minute',
+    repeatIntervalUnit: 'day',
     baseApiUrl: 'http://quotes.rest/qod.json'
 }
