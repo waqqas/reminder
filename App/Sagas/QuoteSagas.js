@@ -1,38 +1,61 @@
-import {call, put} from 'redux-saga/effects'
-import {Alert} from 'react-native'
-import {Permissions} from 'react-native-permissions'
+import {call, put, select} from 'redux-saga/effects'
+import {Alert, Platform} from 'react-native'
+import Permissions from 'react-native-permissions'
+import PushNotification from 'react-native-push-notification'
+import moment from 'moment'
 
+import Quotes from '../Constants/Quotes'
 import QuoteActions from '../Redux/QuoteRedux'
 
-export function* getQuoteList(api) {
-    const {status} = yield call(Permissions.check, 'notifications')
+export function* toggleNotification() {
+    const enabled = yield select((state) => state.quote.enabled)
+    const fireDate = yield select((state) => state.quote.fireDate)
 
-    let response = null
+    if (enabled === true) {
+        let status = 'authorized'
+        if (Platform.OS === 'ios') {
+            status = yield call(Permissions.check, 'notification')
+        }
 
-    switch (status) {
-        case 'granted':
+        switch (status) {
+            case 'undetermined':
+                yield call(Permissions.request, 'notification')
+                yield put(QuoteActions.toggleNotification())
+                break
+            case 'denied':
+                Alert.alert(
+                    'Notification disabled',
+                    'Please enable push notification from Settings',
+                    [
+                        {
+                            text: 'OK', onPress: () => {
+                        }
+                        }
+                    ],
+                    {cancelable: false}
+                )
+                break
+            case 'authorized':
+                const message = Quotes[moment(fireDate).dayOfYear()]
 
-            response = yield call(api.getQuoteList)
+                PushNotification.localNotificationSchedule({
+                    message: message,
+                    date: fireDate
+                });
 
-            if (response.ok === true) {
-                yield put(QuoteActions.getQuoteListSuccess(response))
-            }
-            else {
-                yield put(QuoteActions.getQuoteListFailure(response))
-            }
-            break
-        case 'undetermined':
-            yield call(Permissions.request, 'notifications')
-            yield put(QuoteActions.getQuoteList())
-            break
-        case 'denied':
-            Alert.alert(
-                'Notification Permission Denied',
-                'Please enable permission in app settings',
-                [
-                    {text: 'OK'}
-                ],
-                {cancelable: false}
-            )
+                yield put(QuoteActions.toggleNotificationSuccess())
+
+                break
+        }
     }
+    else {
+        PushNotification.cancelAllLocalNotifications()
+        yield put(QuoteActions.toggleNotificationSuccess())
+    }
+
+}
+
+export function* setNotificationTime({fireDate}) {
+    yield put(QuoteActions.setNotificationTimeSuccess(fireDate))
+
 }
