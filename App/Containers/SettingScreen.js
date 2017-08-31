@@ -142,7 +142,6 @@ class SettingScreen extends Component {
             }
             this.scheduleLocalNotification(this.state.actualTime)
         } else {
-            console.log(value)
             this.props.setNotificationState(false, false)
             if (Platform.OS === 'ios') {
                 PushNotificationIOS.cancelLocalNotifications()

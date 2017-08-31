@@ -65,7 +65,7 @@ class HomeScreen extends Component {
         this.setState({
             isDateTimePickerVisible: false,
             date: moment(date).format("MMMM D"),
-            actualTime: moment(date).utc(),
+            actualDate: moment(date).utc(),
             dayOfYear: moment(date).dayOfYear()
         })
     }
