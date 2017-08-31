@@ -3,15 +3,13 @@ import {Alert, Platform} from 'react-native'
 import Permissions from 'react-native-permissions'
 import PushNotification from 'react-native-push-notification'
 import moment from 'moment'
-
-import Quotes from '../Constants/Quotes'
 import QuoteActions from '../Redux/QuoteRedux'
 
 export function* toggleNotification() {
     const enabled = yield select((state) => state.quote.enabled)
     const fireDate = yield select((state) => state.quote.fireDate)
 
-    if (enabled === true) {
+    if (enabled === false) {
         let status = 'authorized'
         if (Platform.OS === 'ios') {
             status = yield call(Permissions.check, 'notification')
@@ -36,7 +34,10 @@ export function* toggleNotification() {
                 )
                 break
             case 'authorized':
-                const message = Quotes[moment(fireDate).dayOfYear()]
+                const dayOfYear = moment(fireDate).dayOfYear()
+                const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
+
+                PushNotification.cancelAllLocalNotifications()
 
                 PushNotification.localNotificationSchedule({
                     message: message,
@@ -56,6 +57,22 @@ export function* toggleNotification() {
 }
 
 export function* setNotificationTime({fireDate}) {
+    const enabled = yield select((state) => state.quote.enabled)
+
+    if (enabled === true) {
+        const dayOfYear = moment(fireDate).dayOfYear()
+        const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
+
+        PushNotification.cancelAllLocalNotifications()
+
+
+        PushNotification.localNotificationSchedule({
+            message: message,
+            date: fireDate
+        });
+
+    }
+
     yield put(QuoteActions.setNotificationTimeSuccess(fireDate))
 
 }

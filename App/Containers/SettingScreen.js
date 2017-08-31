@@ -38,13 +38,13 @@ class SettingScreen extends Component {
             // fireDate: new Date(Date.now()),
             isDateTimePickerVisible: false,
         }
-        this._handleAppStateChange = this._handleAppStateChange.bind(this)
+        // this._handleAppStateChange = this._handleAppStateChange.bind(this)
         // this.checkNotificationPermissions = this.checkNotificationPermissions.bind(this)
         // this.scheduleLocalNotification = this.scheduleLocalNotification.bind(this)
     }
 
     componentDidMount() {
-        AppState.addEventListener('change', this._handleAppStateChange)
+        // AppState.addEventListener('change', this._handleAppStateChange)
         // PushNotificationIOS.addEventListener('localNotification', this.onNotification)
         // PushNotification.localNotification({
         //     title: "Today's reminder",
@@ -58,75 +58,8 @@ class SettingScreen extends Component {
     }
 
     componentWillUnmount() {
-        AppState.removeEventListener('change', this._handleAppStateChange)
+        // AppState.removeEventListener('change', this._handleAppStateChange)
         PushNotificationIOS.removeEventListener('localNotification', this.onNotification)
-    }
-
-    // componentWillReceiveProps(nextProps) {
-    //     console.log('will receive props', nextProps)
-    //     // this.setState({
-    //     //     dailyNotification: nextProps.dailyNotification,
-    //     //     pushNotification: nextProps.pushNotification,
-    //     // })
-    //
-    //     if (nextProps.dailyNotification === false && nextProps.pushNotification === false) {
-    //         if (Platform.OS === 'ios') {
-    //             PushNotificationIOS.cancelLocalNotifications()
-    //         } else {
-    //             PushNotification.cancelAllLocalNotifications()
-    //         }
-    //     }
-    // }
-
-    // checkNotificationPermissions() {
-    //     //response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
-    //     Permissions.check('notification')
-    //         .then(response => {
-    //             console.log(response)
-    //             if (response === 'undetermined') {
-    //                 Permissions.request('notification')
-    //                     .then(response => {
-    //                         if (response === 'authorized') {
-    //                             this.props.setNotificationState(true, true)
-    //                         }
-    //                     })
-    //             } else if (response === 'denied') {
-    //                 Alert.alert(
-    //                     'Enable Push Notification',
-    //                     'Press "Ok" and select "Allow Notifications" ',
-    //                     [
-    //                         {
-    //                             text: 'OK', onPress: () => {
-    //                             const url = 'app-settings:'
-    //
-    //                             Linking.canOpenURL(url).then(supported => {
-    //                                 if (!supported) {
-    //                                     console.log('Can\'t handle url: ' + url);
-    //                                 } else {
-    //                                     return Linking.openURL(url);
-    //                                 }
-    //                             }).catch(err => console.error('An error occurred', err));
-    //                         }
-    //                         },
-    //                     ],
-    //                     {cancelable: false}
-    //                 )
-    //             } else if (response === 'authorized') {
-    //                 this.props.setNotificationState(true, true)
-    //             }
-    //         })
-    // }
-
-    _handleAppStateChange(appState) {
-        console.log('App state change', appState)
-        if (appState === 'active' && Platform.OS === 'ios') {
-            Permissions.check('notification')
-                .then(response => {
-                    if (response === 'denied') {
-                        this.props.setNotificationState(false, this.props.fireDate)
-                    }
-                })
-        }
     }
 
     onNotification(notification) {
