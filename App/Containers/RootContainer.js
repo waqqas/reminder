@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {StatusBar, View} from 'react-native'
+import {StatusBar, View, PushNotificationIOS} from 'react-native'
 import ReduxNavigation from '../Navigation/ReduxNavigation'
 import {connect} from 'react-redux'
 import StartupActions from '../Redux/StartupRedux'
@@ -13,6 +13,13 @@ class RootContainer extends Component {
         if (!ReduxPersist.active) {
             this.props.startup()
         }
+
+        this.onNotification = this.onNotification.bind(this)
+        PushNotificationIOS.getInitialNotification().then((notification) => this.onNotification(notification))
+    }
+
+    onNotification(notification){
+        console.log('onNotification: ', notification)
     }
 
     render() {

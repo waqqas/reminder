@@ -1,9 +1,9 @@
 import {call, put, select} from 'redux-saga/effects'
-import {Alert, Platform} from 'react-native'
+import {Alert, Platform, PushNotificationIOS} from 'react-native'
 import Permissions from 'react-native-permissions'
-import PushNotification from 'react-native-push-notification'
 import moment from 'moment'
 import QuoteActions from '../Redux/QuoteRedux'
+import AppConfig from '../Config/AppConfig'
 
 export function* toggleNotification() {
     const enabled = yield select((state) => state.quote.enabled)
@@ -37,10 +37,13 @@ export function* toggleNotification() {
                 const dayOfYear = moment(fireDate).dayOfYear()
                 const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
 
-                // PushNotification.cancelAllLocalNotifications()
+                PushNotificationIOS.cancelAllLocalNotifications()
 
-                PushNotification.localNotification({
-                    message: message
+                PushNotificationIOS.scheduleLocalNotification({
+                    alertBody: message,
+                    repeatInterval: AppConfig.repeatIntervalUnit,
+                    fireDate
+
                 });
 
                 yield put(QuoteActions.toggleNotificationSuccess())
@@ -49,7 +52,7 @@ export function* toggleNotification() {
         }
     }
     else {
-        PushNotification.cancelAllLocalNotifications()
+        PushNotificationIOS.cancelAllLocalNotifications()
         yield put(QuoteActions.toggleNotificationSuccess())
     }
 
@@ -62,11 +65,12 @@ export function* setNotificationTime({fireDate}) {
         const dayOfYear = moment(fireDate).dayOfYear()
         const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
 
-        // PushNotification.cancelAllLocalNotifications()
+        PushNotificationIOS.cancelAllLocalNotifications()
 
-
-        PushNotification.localNotification({
-            message: message,
+        PushNotificationIOS.scheduleLocalNotification({
+            alertBody: message,
+            repeatInterval: AppConfig.repeatIntervalUnit,
+            fireDate
         });
 
     }
