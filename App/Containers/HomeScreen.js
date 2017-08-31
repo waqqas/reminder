@@ -31,9 +31,7 @@ class HomeScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            date: moment().format("MMMM D"),
-            actualDate: moment.utc(),
-            dayOfYear: moment.utc().dayOfYear(),
+            date: moment.utc(),
             isDateTimePickerVisible: false
         }
     }
@@ -44,16 +42,14 @@ class HomeScreen extends Component {
 
     handlePressArrow(arrowDirection) {
         let newDate = ''
-        if (arrowDirection == 'RIGHT') {
-            newDate = this.state.actualDate.add(1, 'days')
+        if (arrowDirection === 'RIGHT') {
+            newDate = moment(this.state.date).add(1, 'days')
         }
-        else if (arrowDirection == 'LEFT') {
-            newDate = this.state.actualDate.subtract(1, 'days')
+        else if (arrowDirection === 'LEFT') {
+            newDate = moment(this.state.date).subtract(1, 'days')
         }
         this.setState({
-            date: newDate.format("MMMM D"),
-            actualDate: newDate,
-            dayOfYear: newDate.dayOfYear()
+            date: newDate
         })
     }
 
@@ -64,14 +60,15 @@ class HomeScreen extends Component {
     _handleTimePicked = (date) => {
         this.setState({
             isDateTimePickerVisible: false,
-            date: moment(date).format("MMMM D"),
-            actualDate: moment(date).utc(),
-            dayOfYear: moment(date).dayOfYear()
+            date
         })
     }
 
 
     render() {
+        const dayOfYear = moment(this.state.date).dayOfYear()
+        const message = `This is a sample reminder message. This is message number ${dayOfYear} of 365`
+
         return (
             <View style={styles.mainContainer}>
                 <LinearGradient colors={[Colors.gradient1, Colors.gradient2]}
@@ -93,7 +90,7 @@ class HomeScreen extends Component {
                             underlayColor={Colors.transparent}
                             onPress={this.handlePressArrow.bind(this, 'LEFT')}/>
                         <Text style={{color: Colors.transparentGrey, fontSize: 35}}
-                              onPress={this.handlePressTime.bind(this)}>{this.state.date}</Text>
+                              onPress={this.handlePressTime.bind(this)}>{moment(this.state.date).format("MMMM D")}</Text>
                         <Icon
                             size={45}
                             name='caret-right'
@@ -104,7 +101,7 @@ class HomeScreen extends Component {
                     </View>
 
                     <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between'}}>
-                        <Text style={{color: Colors.snow, fontSize: 18}}>{Quotes[this.state.dayOfYear]}</Text>
+                        <Text style={{color: Colors.snow, fontSize: 18}}>{message}</Text>
                     </View>
 
                     <View style={{alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', position: 'absolute', bottom: 0}}>
