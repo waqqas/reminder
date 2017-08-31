@@ -39,7 +39,7 @@ class SettingScreen extends Component {
             dailyNotification: this.props.dailyNotification,
             pushNotification: this.props.pushNotification,
             time: moment().format("h:mm A"),
-            actualTime: Date.now(),
+            actualTime: new Date(Date.now()),
             isDateTimePickerVisible: false,
         }
         this._handleAppStateChange = this._handleAppStateChange.bind(this)
@@ -62,11 +62,19 @@ class SettingScreen extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log(nextProps)
+        console.log('will receive props', nextProps)
         this.setState({
             dailyNotification: nextProps.dailyNotification,
             pushNotification: nextProps.pushNotification,
         })
+
+        if (nextProps.dailyNotification == false && nextProps.pushNotification == false) {
+            if (Platform.OS === 'ios') {
+                PushNotificationIOS.cancelLocalNotifications()
+            } else {
+                PushNotification.cancelAllLocalNotifications()
+            }
+        }
     }
 
     checkNotificationPermissions() {
@@ -78,7 +86,6 @@ class SettingScreen extends Component {
                     Permissions.request('notification')
                         .then(response => {
                             if (response == 'authorized') {
-                                // this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications IOS
                                 this.props.setNotificationState(true, true)
                             }
                         })
@@ -104,25 +111,22 @@ class SettingScreen extends Component {
                         {cancelable: false}
                     )
                 } else if (response == 'authorized') {
-                    // this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS, Schedule notifications IOS
                     this.props.setNotificationState(true, true)
                 }
             })
     }
 
     _handleAppStateChange(appState) {
+        console.log('App state change', appState)
         if (appState == 'active' && Platform.OS === 'ios') {
             Permissions.check('notification')
                 .then(response => {
                     if (response == 'undetermined') {
-                        // this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
-                        this.props.setNotificationState(false, false)
+                        this.props.setNotificationState(false, this.state.dailyNotification)
                     } else if (response == 'denied') {
-                        // this.setState({dailyNotification: false, pushNotification: false})//TODO : IN SAGAS
-                        this.props.setNotificationState(false, false)
+                        this.props.setNotificationState(false, this.state.dailyNotification)
                     } else if (response == 'authorized') {
-                        // this.setState({dailyNotification: true, pushNotification: true})//TODO : IN SAGAS
-                        this.props.setNotificationState(true, true)
+                        this.props.setNotificationState(true, this.state.dailyNotification)
                     }
                 })
         }
@@ -133,11 +137,11 @@ class SettingScreen extends Component {
     }
 
     handleSwitch(value) {
+        console.log('Switch', value)
         if (value) {
             if (Platform.OS === 'ios') {
                 this.checkNotificationPermissions()
             } else {
-                // this.setState({dailyNotification: true, pushNotification: true})  //TODO : IN SAGAS, Schedule notifications ANDROID
                 this.props.setNotificationState(true, true)
             }
             this.scheduleLocalNotification(this.state.actualTime)
@@ -148,11 +152,11 @@ class SettingScreen extends Component {
             } else {
                 PushNotification.cancelAllLocalNotifications()
             }
-            // this.setState({dailyNotification: false, pushNotification: false})  //TODO : Test IN SAGAS, Cancel all notifications IOS and ANDROID
         }
     }
 
     scheduleLocalNotification(time) {
+        console.log('Schdeule notification', time)
         if (Platform.OS === 'ios') {
             PushNotificationIOS.scheduleLocalNotification({
                 firedate: time,
@@ -180,10 +184,10 @@ class SettingScreen extends Component {
             time: moment(time).format("h:mm A"),
             actualTime: time
         })
-
-        //TODO : Test Schedule notifications ANDROID and IOS
-        this.scheduleLocalNotification(time)
-
+        console.log('Time picked', time)
+        if(this.state.dailyNotification) {
+            this.scheduleLocalNotification(time)
+        }
     }
 
     render() {
