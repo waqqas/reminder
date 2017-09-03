@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {PushNotificationIOS, Switch, Text, View} from 'react-native'
+import {Switch, Text, View} from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import {connect} from "react-redux"
 import {Button, Icon} from 'react-native-elements'
@@ -34,18 +34,6 @@ class SettingScreen extends Component {
         this.state = {
             isDateTimePickerVisible: false,
         }
-    }
-
-    componentDidMount() {
-        PushNotificationIOS.addEventListener('localNotification', this.onNotification)
-    }
-
-    componentWillUnmount() {
-        PushNotificationIOS.removeEventListener('localNotification', this.onNotification)
-    }
-
-    onNotification(notification) {
-        console.log('OnNotify', notification)
     }
 
     handleSwitch() {

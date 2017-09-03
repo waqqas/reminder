@@ -10,10 +10,7 @@ export function* toggleNotification() {
     const fireDate = yield select((state) => state.quote.fireDate)
 
     if (enabled === false) {
-        let status = 'authorized'
-        if (Platform.OS === 'ios') {
-            status = yield call(Permissions.check, 'notification')
-        }
+        const status = yield call(Permissions.check, 'notification')
 
         switch (status) {
             case 'undetermined':
